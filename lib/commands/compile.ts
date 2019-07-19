@@ -54,7 +54,13 @@ export default class Compile extends Command {
       if (result.success) {
         console.log("Ok");
       } else {
-        console.log("Line: ", result.line, " Offset: ", result.offset, " Error: \"", result.errorMessage, "\".");
+        if (result.errors) {
+          result.errors.forEach((error) => {
+            console.log("Line: ", error.line, " Offset: ", error.offset, " Error: \"", error.errorMessage, "\".");
+          });
+        } else {
+          console.log("Internal error: ", result.className);
+        }
       }
     } catch (error) {
       console.error(error);

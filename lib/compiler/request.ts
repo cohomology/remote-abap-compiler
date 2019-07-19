@@ -1,11 +1,24 @@
 import { ActivationResult, ADTClient, session_types } from "abap-adt-api";
 import randomstring from "randomstring";
 
-export interface ICompilationResult {
+interface IActivationResultMessage {
+    objDescr: string;
+    type: string;
+    line: number;
+    href: string;
+    forceSupported: boolean;
+    shortText: string;
+}
+
+export interface ICompilationError {
   line?: number;
   offset?: number;
   errorMessage?: string;
+}
+
+export interface ICompilationResult {
   success: boolean;
+  errors?: ICompilationError[];
   className: string;
 }
 
@@ -80,21 +93,61 @@ export class CompilationRequest {
 
   private mapToCompilationResult(activationResult: ActivationResult): ICompilationResult {
     if (!activationResult.success && activationResult.messages.length > 0) {
-      const search = /#start=(\d+),(\d+)/g;
-      const match = search.exec(activationResult.messages[0].href);
-      if (match !== null) {
-        return {
-          className: this.className,
-          errorMessage: activationResult.messages[0].shortText,
-          line: parseInt(match[1], 10),
-          offset: parseInt(match[2], 10),
-          success: false,
-        };
-      }
+      return {
+        className: this.className,
+        errors: activationResult.messages.map(this.mapErrorMessages.bind(this)),
+        success: activationResult.success,
+      };
     }
     return {
       className: this.className,
       success: activationResult.success,
     };
+  }
+
+  private mapErrorMessages(message: IActivationResultMessage): ICompilationError {
+    const mainMethodErrorTag = `Class ${this.className}, Method IF_OO_ADT_CLASSRUN~MAIN`;
+    if (message.objDescr === mainMethodErrorTag) {
+      return this.mapErrorFromGlobalClass(message);
+    } else {
+      return this.mapErrorFromLocalTypesInclude(message);
+    }
+  }
+
+  private mapErrorFromLocalTypesInclude(message: IActivationResultMessage): ICompilationError {
+    const search = /#start=(\d+),(\d+)/g;
+    const match = search.exec(message.href);
+    if (match !== null) {
+      return {
+        errorMessage: message.shortText,
+        line: parseInt(match[1], 10),
+        offset: parseInt(match[2], 10),
+      };
+    } else {
+      return {
+        errorMessage: message.shortText,
+        line: -1,
+        offset: -1,
+      };
+    }
+  }
+
+  private mapErrorFromGlobalClass(message: IActivationResultMessage): ICompilationError {
+    if (message.shortText === "Type \"MAIN\" is unknown." ||
+        message.shortText === "Method \"RUN\" is unknown or PROTECTED or PRIVATE.") {
+      return {
+        errorMessage: "Missing class named \"MAIN\" with public method \"RUN\".",
+        line: -1,
+        offset: -1,
+      };
+    } else {
+      const defaultErrorMessage = "The method \"RUN\" of class \"MAIN\" " +
+        "must have exactly one importing parameter of type \"REF TO IF_OO_ADT_CLASSRUN_OUT\".";
+      return {
+        errorMessage: defaultErrorMessage,
+        line: -1,
+        offset: -1,
+      };
+    }
   }
 }
