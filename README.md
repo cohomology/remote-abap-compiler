@@ -14,6 +14,6 @@ npm link
 ```
 After that, the ABAP compiler utility should be available in some shared location. You can call it like follows:
 ```
-abapc compile -u https://your_abap_server_url:port_number -u username -c 000 file.abap
+abapc compile -u https://your_abap_server_url:port_number -n username -c 000 file.abap
 ```
 For the http requests, the `axios` library is used, which heavily uses Javascripts `async` and `await` concepts.
