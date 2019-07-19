@@ -1,5 +1,13 @@
-import { ADTClient, session_types } from "abap-adt-api";
+import { ActivationResult, ADTClient, session_types } from "abap-adt-api";
 import randomstring from "randomstring";
+
+export interface ICompilationResult {
+  line?: number;
+  offset?: number;
+  errorMessage?: string;
+  success: boolean;
+  className: string;
+}
 
 export class CompilationRequest {
   private adtClient: ADTClient;
@@ -13,20 +21,19 @@ export class CompilationRequest {
       charset: "alphanumeric",
       length: 26,
     });
-    console.log(this.className);
     this.classUrl = "/sap/bc/adt/oo/classes/" + this.className.toLowerCase();
   }
 
-  public async compile(code: string): Promise<string> {
+  public async compile(code: string): Promise<ICompilationResult> {
     await this.cleanup(true);
-    const source: string = "";
+    let result;
     try {
       await this.createClass();
-      await this.putClassSource(this.getGlobalClassSource(), code);
+      result = await this.putClassSource(this.getGlobalClassSource(), code);
     } finally {
       await this.cleanup();
     }
-    return source;
+    return this.mapToCompilationResult(result);
   }
 
   private async cleanup(ignoreError: boolean = false) {
@@ -55,20 +62,39 @@ export class CompilationRequest {
 
                     class ${this.className} implementation.
                       method if_oo_adt_classrun~main.
-                        new main()->run( out ).
+                        new main( )->run( out ).
                       endmethod.
                     endclass.`;
     return source;
   }
 
-  private async putClassSource(globalClass: string, localTypes: string) {
+  private async putClassSource(globalClass: string, localTypes: string): Promise<ActivationResult> {
     this.adtClient.stateful = session_types.stateful;
     const lock = await this.adtClient.lock(this.classUrl);
     await this.adtClient.setObjectSource(this.classUrl + "/source/main", globalClass, lock.LOCK_HANDLE);
     await this.adtClient.setObjectSource(this.classUrl + "/includes/implementations", localTypes, lock.LOCK_HANDLE);
     await this.adtClient.dropSession();
     const result = await this.adtClient.activate(this.className, this.classUrl);
-    console.log(this.className);
-    console.log(result);
+    return result;
+  }
+
+  private mapToCompilationResult(activationResult: ActivationResult): ICompilationResult {
+    if (!activationResult.success && activationResult.messages.length > 0) {
+      const search = /#start=(\d+),(\d+)/g;
+      const match = search.exec(activationResult.messages[0].href);
+      if (match !== null) {
+        return {
+          className: this.className,
+          errorMessage: activationResult.messages[0].shortText,
+          line: parseInt(match[1], 10),
+          offset: parseInt(match[2], 10),
+          success: false,
+        };
+      }
+    }
+    return {
+      className: this.className,
+      success: activationResult.success,
+    };
   }
 }

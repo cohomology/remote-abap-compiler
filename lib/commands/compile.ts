@@ -50,7 +50,12 @@ export default class Compile extends Command {
   private async connectAndCompile(url: string, user: string, client: string, password: string, code: string) {
     const req = new CompilationRequest(url, user, client, password);
     try {
-      await req.compile(code);
+      const result = await req.compile(code);
+      if (result.success) {
+        console.log("Ok");
+      } else {
+        console.log("Line: ", result.line, " Offset: ", result.offset, " Error: \"", result.errorMessage, "\".");
+      }
     } catch (error) {
       console.error(error);
     }
