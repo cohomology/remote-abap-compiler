@@ -20,6 +20,7 @@ export interface ICompilationResult {
   success: boolean;
   errors?: ICompilationError[];
   className: string;
+  output?: string;
 }
 
 export class CompilationRequest {
@@ -39,14 +40,18 @@ export class CompilationRequest {
 
   public async compile(code: string): Promise<ICompilationResult> {
     await this.cleanup(true);
-    let result;
+    let mappedResult;
     try {
       await this.createClass();
-      result = await this.putClassSource(this.getGlobalClassSource(), code);
+      const result = await this.putClassSource(this.getGlobalClassSource(), code);
+      mappedResult = this.mapToCompilationResult(result);
+      if (mappedResult.success) {
+        mappedResult.output = await this.runClass();
+      }
     } finally {
       await this.cleanup();
     }
-    return this.mapToCompilationResult(result);
+    return mappedResult;
   }
 
   private async cleanup(ignoreError: boolean = false) {
@@ -149,5 +154,9 @@ export class CompilationRequest {
         offset: -1,
       };
     }
+  }
+
+  private async runClass(): Promise<string> {
+    return this.adtClient.runClass(this.className);
   }
 }

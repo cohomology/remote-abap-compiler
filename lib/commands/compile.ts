@@ -52,7 +52,9 @@ export default class Compile extends Command {
     try {
       const result = await req.compile(code);
       if (result.success) {
-        console.log("Ok");
+        if (result.output) {
+          console.log(result.output);
+        }
       } else {
         if (result.errors) {
           result.errors.forEach((error) => {
