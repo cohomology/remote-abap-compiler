@@ -22,6 +22,7 @@ export class CompilationRequest {
     const source: string = "";
     try {
       await this.createClass();
+      await this.putClassSource(this.getGlobalClassSource(), code);
     } finally {
       await this.cleanup();
     }
@@ -42,24 +43,32 @@ export class CompilationRequest {
   }
 
   private async createClass() {
-    this.log(`Creating class name=${this.className}, url=${this.classUrl}`);
     await this.adtClient.statelessClone.createObject("CLAS/OC", this.className, "$TMP", "remote ABAP compiler",
       "/sap/bc/adt/packages/$TMP");
-    this.log(`Finished creating class name=${this.className}, url=${this.classUrl}`);
-    const structure = await this.adtClient.objectStructure(this.classUrl);
-    console.log(structure);
   }
 
-  private async createTestClassInclude(): Promise<string> {
-    this.adtClient.stateful = session_types.stateful;
-    const lock = await this.adtClient.lock(this.classUrl);
-    await this.adtClient.createTestInclude(this.className, lock.LOCK_HANDLE);
-    await this.adtClient.dropSession();
-    const source = await this.adtClient.getObjectSource(this.classUrl + "/includes/testclasses");
+  private getGlobalClassSource(): string {
+    const source = `class ${this.className} definition public create public final.
+                      public section.
+                        interfaces if_oo_adt_classrun.
+                    endclass.
+
+                    class ${this.className} implementation.
+                      method if_oo_adt_classrun~main.
+                        new main()->run( out ).
+                      endmethod.
+                    endclass.`;
     return source;
   }
 
-  private log(str: string) {
-    console.log(str);
+  private async putClassSource(globalClass: string, localTypes: string) {
+    this.adtClient.stateful = session_types.stateful;
+    const lock = await this.adtClient.lock(this.classUrl);
+    await this.adtClient.setObjectSource(this.classUrl + "/source/main", globalClass, lock.LOCK_HANDLE);
+    await this.adtClient.setObjectSource(this.classUrl + "/includes/implementations", localTypes, lock.LOCK_HANDLE);
+    await this.adtClient.dropSession();
+    const result = await this.adtClient.activate(this.className, this.classUrl);
+    console.log(this.className);
+    console.log(result);
   }
 }
