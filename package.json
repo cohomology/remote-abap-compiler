@@ -1,11 +1,10 @@
 {
   "name": "remote-abap-compiler",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Remote ABAP compilation on Steampunk",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
   "scripts": {
-    "prepack": "npm run build",
     "prepare": "npm run build",
     "tslint": "^5.17.0",
     "clean": "rimraf ./dist",
@@ -67,6 +66,7 @@
   },
   "files": [
     "/bin",
-    "/lib"
+    "/lib",
+    "/dist"
   ]
 }
