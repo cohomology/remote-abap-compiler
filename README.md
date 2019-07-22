@@ -1,6 +1,6 @@
 # remote-abap-compiler
 This is the library part of a remote ABAP compiler infrastructure. The corresponding command line utility is contained
-in another node.js project [remote-abap-compiler-cli](https://github.com/cohomology/remote-abap-compiler-cli).
+in another node.js project [remote-abap-compiler-cli](https://github.com/cohomology/remote-abap-compiler-cli). The compiler works for `SAP_BASIS >= 7.53` only.
 
 ## Usage
 
