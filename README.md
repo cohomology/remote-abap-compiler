@@ -16,7 +16,7 @@ are returned.
 
 ## Basic ABAP template
 
-```
+```abap
 class main definition.
   public section.
     methods run importing out type ref to if_oo_adt_classrun_out.
@@ -33,7 +33,7 @@ endclass.
 
 The API can be used very easily.
 
-```
+```typescript
 const request = new CompilationRequest(url, user, client, password);
 const result = await request.compile(source);
 console.log(result.success);
