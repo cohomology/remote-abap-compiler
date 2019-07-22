@@ -1,7 +1,7 @@
 {
   "name": "remote-abap-compiler",
-  "version": "1.0.2",
-  "description": "Remote ABAP compilation on Steampunk",
+  "version": "2.0.0",
+  "description": "Remote ABAP compilation",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
   "scripts": {
@@ -11,9 +11,6 @@
     "build": "tsc && npm run lint",
     "test": "mocha --require ts-node/register test/**/*.ts",
     "lint": "tslint -c tslint.json 'lib/**/*.ts'"
-  },
-  "bin": {
-    "abapc": "./bin/run"
   },
   "repository": {
     "type": "git",
@@ -32,14 +29,9 @@
   },
   "homepage": "https://github.wdf.sap.corp/d054287/remote-abap-compiler#readme",
   "devDependencies": {
-    "@oclif/dev-cli": "^1.22.0",
-    "@oclif/test": "^1.2.4",
-    "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.1.7",
-    "@types/deepmerge": "^2.2.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.12",
-    "@types/request": "^2.48.1",
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
     "rimraf": "^2.6.3",
@@ -48,24 +40,13 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "@oclif/command": "^1.5.15",
-    "@oclif/config": "^1.13.0",
-    "@oclif/plugin-help": "^2.2.0",
     "@types/randomstring": "^1.1.6",
     "@types/read": "0.0.28",
-    "abap-adt-api": "^0.5.24",
+    "abap-adt-api": "^0.5.26",
     "randomstring": "^1.1.5",
     "read": "^1.0.7"
   },
-  "oclif": {
-    "commands": "./lib/commands",
-    "bin": "abapc",
-    "plugins": [
-      "@oclif/plugin-help"
-    ]
-  },
   "files": [
-    "/bin",
     "/lib",
     "/dist"
   ]
