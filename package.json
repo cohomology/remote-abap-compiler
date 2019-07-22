@@ -1,6 +1,6 @@
 {
   "name": "remote-abap-compiler",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Remote ABAP compilation",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -9,7 +9,7 @@
     "tslint": "^5.17.0",
     "clean": "rimraf ./dist",
     "build": "tsc && npm run lint",
-    "test": "mocha --require ts-node/register test/**/*.ts",
+    "test": "mocha --timeout 15000 --require ts-node/register test/**/*.ts",
     "lint": "tslint -c tslint.json 'lib/**/*.ts'"
   },
   "repository": {

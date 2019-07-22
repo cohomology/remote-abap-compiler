@@ -139,7 +139,9 @@ export class CompilationRequest {
 
   private mapErrorFromGlobalClass(message: IActivationResultMessage): ICompilationError {
     if (message.shortText === "Type \"MAIN\" is unknown." ||
-        message.shortText === "Method \"RUN\" is unknown or PROTECTED or PRIVATE.") {
+        message.shortText === "Method \"RUN\" is unknown or PROTECTED or PRIVATE." ||
+        message.shortText.startsWith("The type \"MAIN\" is unknown") ||
+        message.shortText.startsWith("Method \"RUN\" does not exist")) {
       return {
         errorMessage: "Missing class named \"MAIN\" with public method \"RUN\".",
         line: -1,
@@ -156,7 +158,7 @@ export class CompilationRequest {
     }
   }
 
-  private async runClass(): Promise<string> {
+  private async runClass(): Promise < string > {
     return this.adtClient.runClass(this.className);
   }
 }
