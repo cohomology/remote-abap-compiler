@@ -1,6 +1,6 @@
 {
   "name": "remote-abap-compiler",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "Remote ABAP compilation",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.wdf.sap.corp/d054287/remote-abap-compiler.git"
+    "url": "git+https://github.com/cohomology/remote-abap-compiler.git"
   },
   "keywords": [
     "SAP",
@@ -25,9 +25,9 @@
   "author": "SAP",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.wdf.sap.corp/d054287/remote-abap-compiler/issues"
+    "url": "https://github.com/cohomology/remote-abap-compiler/issues"
   },
-  "homepage": "https://github.wdf.sap.corp/d054287/remote-abap-compiler#readme",
+  "homepage": "https://github.com/cohomology/remote-abap-compiler#readme",
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.7",
