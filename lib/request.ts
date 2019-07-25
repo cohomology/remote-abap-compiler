@@ -1,14 +1,5 @@
-import { ActivationResult, ADTClient, session_types } from "abap-adt-api";
+import { ActivationResult, ActivationResultMessage, ADTClient, session_types } from "abap-adt-api";
 import randomstring from "randomstring";
-
-interface IActivationResultMessage {
-    objDescr: string;
-    type: string;
-    line: number;
-    href: string;
-    forceSupported: boolean;
-    shortText: string;
-}
 
 export interface ICompilationError {
   line?: number;
@@ -110,7 +101,7 @@ export class CompilationRequest {
     };
   }
 
-  private mapErrorMessages(message: IActivationResultMessage): ICompilationError {
+  private mapErrorMessages(message: ActivationResultMessage): ICompilationError {
     const mainMethodErrorTag = `Class ${this.className}, Method IF_OO_ADT_CLASSRUN~MAIN`;
     if (message.objDescr === mainMethodErrorTag) {
       return this.mapErrorFromGlobalClass(message);
@@ -119,7 +110,7 @@ export class CompilationRequest {
     }
   }
 
-  private mapErrorFromLocalTypesInclude(message: IActivationResultMessage): ICompilationError {
+  private mapErrorFromLocalTypesInclude(message: ActivationResultMessage): ICompilationError {
     const search = /#start=(\d+),(\d+)/g;
     const match = search.exec(message.href);
     if (match !== null) {
@@ -137,7 +128,7 @@ export class CompilationRequest {
     }
   }
 
-  private mapErrorFromGlobalClass(message: IActivationResultMessage): ICompilationError {
+  private mapErrorFromGlobalClass(message: ActivationResultMessage): ICompilationError {
     if (message.shortText === "Type \"MAIN\" is unknown." ||
         message.shortText === "Method \"RUN\" is unknown or PROTECTED or PRIVATE." ||
         message.shortText.startsWith("The type \"MAIN\" is unknown") ||

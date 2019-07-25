@@ -41,7 +41,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "abap-adt-api": "^0.5.26",
+    "abap-adt-api": "^0.5.28",
     "randomstring": "^1.1.5"
   },
   "files": [
