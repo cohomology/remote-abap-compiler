@@ -92,5 +92,4 @@ describe("CompilationRequestTest", () => {
       line: 8,
       offset: 25 }]);
   });
-
 });

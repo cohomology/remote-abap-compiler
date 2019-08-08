@@ -6,5 +6,8 @@ export function connect() {
     process.env.ADT_USER!,
     process.env.ADT_CLIENT!,
     process.env.ADT_PASS!,
+    process.env.ADT_CLASS_PREFIX!,
+    process.env.ADT_PACKAGE!,
+    process.env.ADT_TRANSPORT!,
   );
 }
